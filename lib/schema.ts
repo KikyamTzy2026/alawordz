@@ -1,0 +1,10 @@
+// Generated from db/migrations/001_init.sql - used as a safety net when tables are missing.
+export const SCHEMA_STATEMENTS: string[] = [
+  "-- WORD HUNT initial schema\nCREATE TABLE IF NOT EXISTS rooms (\n  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n  code text NOT NULL UNIQUE,\n  status text NOT NULL DEFAULT 'lobby' CHECK (status IN ('lobby','countdown','playing','finished')),\n  host_id uuid,\n  duration_min int NOT NULL DEFAULT 10,\n  category text NOT NULL DEFAULT 'random',\n  grid_size int NOT NULL DEFAULT 18,\n  grid jsonb,\n  words jsonb,\n  starts_at timestamptz,\n  ends_at timestamptz,\n  finished_at timestamptz,\n  winner_id uuid,\n  draw boolean NOT NULL DEFAULT false,\n  created_at timestamptz NOT NULL DEFAULT now(),\n  last_activity timestamptz NOT NULL DEFAULT now()\n)",
+  "CREATE INDEX IF NOT EXISTS rooms_last_activity_idx ON rooms (last_activity)",
+  "CREATE TABLE IF NOT EXISTS members (\n  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n  room_id uuid NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,\n  secret_hash text NOT NULL,\n  nickname text NOT NULL,\n  role text NOT NULL CHECK (role IN ('player','spectator')),\n  seat smallint CHECK (seat IN (0,1)),\n  color text,\n  ready boolean NOT NULL DEFAULT false,\n  bonus int NOT NULL DEFAULT 0,\n  joined_at timestamptz NOT NULL DEFAULT now(),\n  last_seen timestamptz NOT NULL DEFAULT now()\n)",
+  "CREATE INDEX IF NOT EXISTS members_room_idx ON members (room_id)",
+  "CREATE UNIQUE INDEX IF NOT EXISTS members_room_seat_uniq ON members (room_id, seat) WHERE role = 'player'",
+  "CREATE UNIQUE INDEX IF NOT EXISTS members_room_color_uniq ON members (room_id, color) WHERE role = 'player'",
+  "CREATE TABLE IF NOT EXISTS claims (\n  room_id uuid NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,\n  word text NOT NULL,\n  member_id uuid NOT NULL REFERENCES members(id) ON DELETE CASCADE,\n  ar smallint NOT NULL,\n  ac smallint NOT NULL,\n  br smallint NOT NULL,\n  bc smallint NOT NULL,\n  claimed_at timestamptz NOT NULL DEFAULT now(),\n  PRIMARY KEY (room_id, word)\n)"
+];

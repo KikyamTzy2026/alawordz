@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+html, body { height: 100%; background: #0b1220; color: #e2e8f0; }
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+.cq { container-type: size; }
+@keyframes fadeout { 0% { opacity: .75; } 100% { opacity: 0; } }
+.flash-bad { animation: fadeout .7s ease-out forwards; }
+@keyframes pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.pop { animation: pop .3s ease-out; }
+@keyframes pulse-soft { 0%,100% { opacity: 1; } 50% { opacity: .55; } }
+.pulse-soft { animation: pulse-soft 1s ease-in-out infinite; }
